@@ -1,0 +1,45 @@
+from aiogram import Router, types
+from services.knowledge import knowledge_texts
+from services.openai_client import call_openai
+
+router = Router()
+
+
+def build_context(question: str) -> str:
+    q = question.lower()
+    parts = [knowledge_texts.get("about_andrey", "")]
+
+    if any(w in q for w in ["начать", "нович", "перв", "страшно"]):
+        parts.append(knowledge_texts.get("beginner_support", ""))
+        parts.append(knowledge_texts.get("easy_running_philosophy", ""))
+    if any(w in q for w in ["сообществ", "группа", "совместн", "пробежк", "клуб"]):
+        parts.append(knowledge_texts.get("community_and_runs", ""))
+
+    return "\n\n---\n\n".join(p for p in parts if p)
+
+
+@router.message(commands={"ask"})
+async def ask(message: types.Message):
+    question = message.get_args()
+    if not question:
+        await message.answer(
+            "Напиши вопрос после команды, например:\n\n"
+            "/ask С чего начать бег после 30?"
+        )
+        return
+
+    context = build_context(question)
+
+    system_prompt = (
+        "Ты — Андрей Потапов, автор канала про спокойный бег и сообщество.\n"
+        "Отвечай коротко, по делу, без планов тренировок и без медицинских советов.\n"
+        "Опирайся на базу знаний ниже, не противоречь ей.\n"
+        "Если вопрос медицинский или про детальный план, мягко посоветуй обратиться к врачу или тренеру.\n"
+        "База знаний:\n" + context
+    )
+
+    user_prompt = f"Вопрос пользователя: {question}\nДай один связный ответ для Telegram."
+
+    answer = await call_openai(system_prompt, user_prompt)
+    await message.answer(answer, parse_mode="Markdown")
+м
