@@ -5,11 +5,15 @@ load_dotenv()
 
 # Telegram
 TELEGRAM_BOT_TOKEN = os.getenv("TELEGRAM_BOT_TOKEN")
+if not TELEGRAM_BOT_TOKEN:
+    raise ValueError("TELEGRAM_BOT_TOKEN environment variable not set")
 WEBHOOK_HOST = os.getenv("WEBHOOK_HOST", "localhost")
 WEBHOOK_PORT = int(os.getenv("WEBHOOK_PORT", 8000))
 
 # OpenAI
 OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
+if not OPENAI_API_KEY:
+    raise ValueError("OPENAI_API_KEY environment variable not set")
 OPENAI_MODEL = os.getenv("OPENAI_MODEL", "gpt-4o")
 
 # System prompts
@@ -71,4 +75,6 @@ SYSTEM_PROMPT_AI_BOT = """
 """
 
 # Max message history
+
+MAX_HISTORY_LENGTH = 10
 MAX_HISTORY_LENGTH = 10  # Keep last 10 messages per user
