@@ -1,38 +1,22 @@
-from typing import Optional
-from openai import OpenAI
+import os
+from openai import AsyncOpenAI
+
+OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
+
+client = AsyncOpenAI(api_key=OPENAI_API_KEY)
 
 
-class OpenAIService:
-    """Service for managing OpenAI API interactions."""
-
-    def __init__(self, model: str, client: OpenAI):
-        self.model = model
-        self.client = client
-
-    async def generate_response(
-        self,
-        messages: list,
-        system_prompt: str,
-        temperature: float = 0.7,
-        max_tokens: int = 1000
-    ) -> Optional[str]:
-        """
-        Generate a response from OpenAI based on messages and system prompt.
-        """
-        try:
-            full_messages = [
-                {"role": "system", "content": system_prompt},
-                *messages
-            ]
-
-            response = self.client.chat.completions.create(
-                model=self.model,
-                messages=full_messages,
-                temperature=temperature,
-                max_tokens=max_tokens
-            )
-
-            return response.choices[0].message.content
-        except Exception as e:
-            print(f"OpenAI error: {e}")
-            return None
+async def call_openai(system_prompt: str, user_prompt: str) -> str:
+    """
+    Базовый вызов OpenAI: system + user, один текстовый ответ.
+    """
+    resp = await client.chat.completions.create(
+        model="gpt-4.1-mini",
+        messages=[
+            {"role": "system", "content": system_prompt},
+            {"role": "user", "content": user_prompt},
+        ],
+        temperature=0.7,
+        max_tokens=800,
+    )
+    return resp.choices[0].message.content or ""
