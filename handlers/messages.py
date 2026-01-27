@@ -5,9 +5,6 @@ from openai import AsyncOpenAI
 
 from config import (
     SYSTEM_PROMPT_DEFAULT,
-    SYSTEM_PROMPT_PLAN,
-    SYSTEM_PROMPT_CONTENT,
-    SYSTEM_PROMPT_AI_BOT,
     OPENAI_API_KEY,
     OPENAI_MODEL,
     MAX_HISTORY_LENGTH
@@ -23,10 +20,9 @@ openai_client = AsyncOpenAI(api_key=OPENAI_API_KEY)
 openai_service = OpenAIService(model=OPENAI_MODEL, client=openai_client)
 memory_service = MemoryService(max_history=MAX_HISTORY_LENGTH)
 
-
 @router.message(F.text)
 async def handle_message(message: Message):
-    """Handle regular text messages."""
+    \"\"\"Handle regular text messages.\"\"\"
     try:
         user_id = message.from_user.id
         user_text = message.text
@@ -36,7 +32,7 @@ async def handle_message(message: Message):
         system_prompt = SYSTEM_PROMPT_DEFAULT
 
         # Add user message to history
-        memory_service.add_message(user_id, "user", user_text)
+        memory_service.add_message(user_id, \"user\", user_text)
 
         # Get conversation history
         history = memory_service.get_history(user_id)
@@ -51,14 +47,14 @@ async def handle_message(message: Message):
 
         if response:
             # Add assistant response to history
-            memory_service.add_message(user_id, "assistant", response)
+            memory_service.add_message(user_id, \"assistant\", response)
             await message.answer(response)
         else:
             await message.answer(
-                "Ошибка при генерировании ответа. Попытайтесь ещё."
+                \"Ошибка при генерировании ответа. Попытайтесь ещё.\"
             )
     except Exception as e:
-        logger.error(f"Error handling message: {e}")
+        logger.error(f\"Error handling message: {e}\")
         await message.answer(
-            "Ошибка сервера. Пожалуйста, попытайтесь позже."
+            \"Ошибка сервера. Пожалуйста, попытайтесь позже.\"
         )
