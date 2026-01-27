@@ -1,33 +1,16 @@
 import os
 import logging
 from fastapi import FastAPI, Request
-from aiogram import Bot, Dispatcher, F
-from aiogram.types import Update, Message
+from aiogram import Bot, Dispatcher
+from aiogram.types import Update
 from aiogram.client.session.aiohttp import AiohttpSession
-from openai import OpenAI
 
-from config import (
-    TELEGRAM_BOT_TOKEN,
-    OPENAI_API_KEY,
-    OPENAI_MODEL,
-    SYSTEM_PROMPT_DEFAULT,
-    SYSTEM_PROMPT_PLAN,
-    SYSTEM_PROMPT_CONTENT,
-    SYSTEM_PROMPT_AI_BOT,
-    MAX_HISTORY_LENGTH
-)
-from services.openai_client import OpenAIService
-from services.memory import MemoryService
+from config import TELEGRAM_BOT_TOKEN
 from handlers.commands import router as command_router
 from handlers.messages import router as message_router
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
-
-# Initialize services
-openclient = OpenAI(api_key=OPENAI_API_KEY)
-openai_service = OpenAIService(model=OPENAI_MODEL, client=openclient)
-memory_service = MemoryService(max_history=MAX_HISTORY_LENGTH)
 
 # Telegram setup
 session = AiohttpSession()
