@@ -22,8 +22,8 @@ memory_service = MemoryService(max_history=MAX_HISTORY_LENGTH)
 
 @router.message(F.text)
 async def handle_message(message: Message):
-    \"\"\"Handle regular text messages.\"\"\"
-    try:
+    """Handle regular text messages."""  
+        try:
         user_id = message.from_user.id
         user_text = message.text
 
