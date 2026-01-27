@@ -20,8 +20,8 @@ bot = Bot(token=TELEGRAM_BOT_TOKEN, session=session)
 dp = Dispatcher()
 
 # Register routers
-dp.include_router(commands_router)
-dp.include_router(messages_router)
+dp.include_router(command_router)
+dp.include_router(message_router)
 dp.include_router(posts.router)
 dp.include_router(qa.router)
 
@@ -39,7 +39,7 @@ async def telegram_webhook(request: Request):
         await dp.feed_update(bot, update)
         return {"ok": True}
     except Exception as e:
-        logger.error(f"Webhook error: {e}")
+        logger.exception("Webhook error")
         return {"ok": False, "error": str(e)}
 
 
@@ -53,3 +53,4 @@ if __name__ == "__main__":
     import uvicorn
     port = int(os.getenv("PORT", 8000))
     uvicorn.run(app, host="0.0.0.0", port=port)
+
