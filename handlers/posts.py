@@ -1,11 +1,12 @@
 from aiogram import Router, types
+from aiogram.filters import Command
 from services.openai_client import call_openai
 from services.knowledge import knowledge_texts
 
 router = Router()
 
 
-@router.message(commands={"post_easy"})
+@router.message(Command("post_easy"))
 async def post_easy(message: types.Message):
     kb = knowledge_texts.get("easy_running_philosophy", "")
     user_hint = message.get_args()  # /post_easy страх новичка
@@ -27,7 +28,7 @@ async def post_easy(message: types.Message):
     await message.answer(answer, parse_mode="Markdown")
 
 
-@router.message(commands={"post_beginner"})
+@router.message(Command("post_beginner"))
 async def post_beginner(message: types.Message):
     kb = knowledge_texts.get("beginner_support", "")
     user_hint = message.get_args()
@@ -49,7 +50,7 @@ async def post_beginner(message: types.Message):
     await message.answer(answer, parse_mode="Markdown")
 
 
-@router.message(commands={"post_community"})
+router.message(Command("post_community"))
 async def post_community(message: types.Message):
     kb = knowledge_texts.get("community_and_runs", "")
     user_hint = message.get_args()
@@ -71,7 +72,7 @@ async def post_community(message: types.Message):
     await message.answer(answer, parse_mode="Markdown")
 
 
-@router.message(commands={"post_about"})
+@router.message(Command("post_about"))
 async def post_about(message: types.Message):
     kb = knowledge_texts.get("about_andrey", "")
     user_hint = message.get_args()
