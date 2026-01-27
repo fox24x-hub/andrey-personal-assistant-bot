@@ -1,7 +1,7 @@
 import logging
 from aiogram import Router, F
 from aiogram.types import Message
-from openai import OpenAI
+from openai import AsyncOpenAI
 
 from config import (
     SYSTEM_PROMPT_DEFAULT,
@@ -19,7 +19,7 @@ logger = logging.getLogger(__name__)
 router = Router()
 
 # Initialize services locally
-openai_client = OpenAI(api_key=OPENAI_API_KEY)
+openai_client = AsyncOpenAI(api_key=OPENAI_API_KEY)
 openai_service = OpenAIService(model=OPENAI_MODEL, client=openai_client)
 memory_service = MemoryService(max_history=MAX_HISTORY_LENGTH)
 
