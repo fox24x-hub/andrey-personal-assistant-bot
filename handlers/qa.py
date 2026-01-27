@@ -27,29 +27,29 @@ def build_context(question: str) -> str:
     if any(w in q for w in ["сообществ", "группа", "совместн", "пробежк", "клуб"]):
         parts.append(knowledge_texts.get("community_and_runs", ""))
     
-    return "\n\n---\n\n".join(p for p in parts if p)
+    return "\n\n---\n\n".join(p for p in parts if p)  # Обычные \n для промпта!
 
 @router.message(Command("ask"))
 async def ask(message: types.Message, command: CommandObject):
-    question = command.args
-    if not question:
+    question = command.args or ""
+    if not question.strip():
         await message.answer(
-            "Напиши вопрос после команды, например:\n\n"
+            "❓ Напиши вопрос после команды, например:\\n"
             "/ask С чего начать бег после 30?"
         )
         return
     
     context = build_context(question)
     system_prompt = (
-        "Ты — Андрей Потапов, автор канала про спокойный бег и сообщество.\n"
-        "Отвечай коротко, по делу, без планов тренировок и без медицинских советов.\n"
-        "Опирайся на базу знаний ниже, не противоречь им.\n"
-        "Если вопрос медицинский или про детальный план, мягко посоветуй обратиться к врачу или тренеру.\n"
-        "База знаний:\n" + context
+        "Ты — Андрей Потапов, автор канала про спокойный бег и сообщество.\\n"
+        "Отвечай коротко, по делу, без планов тренировок и без медицинских советов.\\n"
+        "Опирайся на базу знаний ниже, не противоречь им.\\n"
+        "Если вопрос медицинский или про детальный план, мягко посоветуй обратиться к врачу или тренеру.\\n"
+        "База знаний:\\n" + context
     )
     user_prompt = (
-        f"Вопрос пользователя: {question}\n"
+        f"Вопрос пользователя: {question}\\n"
         "Дай один связный ответ для Telegram."
     )
     answer = await call_openai(system_prompt, user_prompt)
-    await message.answer(answer, parse_mode="Markdown")
+    await message.answer(answer, parse_mode="MarkdownV2")
