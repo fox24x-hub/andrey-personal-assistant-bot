@@ -26,7 +26,7 @@ dp.include_router(messages_router)
 async def lifespan(app: FastAPI):
     try:
         # Railway публичный URL (NGINX проксирует на твой PORT)
-        webhook_url = f"https://{WEBHOOK_HOST}/webhook"  # Без порта!
+        webhook_url = f"https://andrey-personal-assistant-bot-production.up.railway.app//webhook"  # Без порта!
         
         logger.info(f"Setting webhook to {webhook_url}")
         await bot.set_webhook(url=webhook_url, drop_pending_updates=True)
