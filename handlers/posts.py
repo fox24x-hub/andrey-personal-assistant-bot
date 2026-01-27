@@ -50,7 +50,7 @@ async def post_beginner(message: types.Message):
     await message.answer(answer, parse_mode="Markdown")
 
 
-router.message(Command("post_community"))
+@router.message(Command("post_community"))
 async def post_community(message: types.Message):
     kb = knowledge_texts.get("community_and_runs", "")
     user_hint = message.get_args()
