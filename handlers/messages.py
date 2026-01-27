@@ -15,11 +15,10 @@ from services.memory import MemoryService
 logger = logging.getLogger(__name__)
 router = Router()
 
-# Initialize services locally
+# Initialize services locally (singleton pattern)
 openai_client = AsyncOpenAI(api_key=OPENAI_API_KEY)
 openai_service = OpenAIService(model=OPENAI_MODEL, client=openai_client)
 memory_service = MemoryService(max_history=MAX_HISTORY_LENGTH)
-
 
 @router.message(F.text)
 async def handle_message(message: Message):
@@ -28,8 +27,11 @@ async def handle_message(message: Message):
         user_id = message.from_user.id
         user_text = message.text
 
-        # Determine mode based on context
-        # For now, use default prompt
+        # Skip commands (handled by other routers)
+        if user_text.startswith('/'):
+            return
+
+        # Determine mode based on context (TODO: implement modes)
         system_prompt = SYSTEM_PROMPT_DEFAULT
 
         # Add user message to history
@@ -51,11 +53,8 @@ async def handle_message(message: Message):
             memory_service.add_message(user_id, "assistant", response)
             await message.answer(response)
         else:
-            await message.answer(
-                "Ошибка при генерировании ответа. Попытайтесь ещё."
-            )
+            await message.answer("❌ Ошибка при генерации ответа. Попробуйте ещё раз.")
+            
     except Exception as e:
-        logger.error(f"Error handling message: {e}")
-        await message.answer(
-            "Ошибка сервера. Пожалуйста, попытайтесь позже."
-        )
+        logger.error(f"Error handling message {message.from_user.id}: {e}", exc_info=True)
+        await message.answer("❌ Серверная ошибка. Попробуйте позже.")
