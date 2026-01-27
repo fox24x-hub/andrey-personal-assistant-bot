@@ -8,17 +8,16 @@ TELEGRAM_BOT_TOKEN = os.getenv("TELEGRAM_BOT_TOKEN")
 if not TELEGRAM_BOT_TOKEN:
     raise ValueError("TELEGRAM_BOT_TOKEN environment variable not set")
 WEBHOOK_HOST = os.getenv("WEBHOOK_HOST", "localhost")
-WEBHOOK_PORT = int(os.getenv("WEBHOOK_PORT", 8000))
+WEBHOOK_PORT = int(os.getenv("WEBHOOK_PORT", "8000"))
 
 # OpenAI
 OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
 if not OPENAI_API_KEY:
     raise ValueError("OPENAI_API_KEY environment variable not set")
-OPENAI_MODEL = os.getenv("OPENAI_MODEL", "gpt-4o")
+OPENAI_MODEL = os.getenv("OPENAI_MODEL", "gpt-4o-mini")
 
 # System prompts
-SYSTEM_PROMPT_DEFAULT = """
-Ты личный ассистент Андрея Потапова.
+SYSTEM_PROMPT_DEFAULT = """Ты личный ассистент Андрея Потапова.
 
 ## Контекст о пользователе:
 - Бегун-ультрамарафонец (опыт 75 км, марафоны, трейлранинг)
@@ -35,11 +34,9 @@ SYSTEM_PROMPT_DEFAULT = """
 ## Стиль:
 - Без воды и общих фраз
 - Практичные советы с конкретикой
-- Если нужен пример кода — давай рабочий код
-"""
+- Если нужен пример кода — давай рабочий код"""
 
-SYSTEM_PROMPT_CONTENT = """
-Ты помощник по созданию контента для бренда «Андрей Потапов Run AI».
+SYSTEM_PROMPT_CONTENT = """Ты помощник по созданию контента для бренда «Андрей Потапов Run AI».
 
 ## Специализация:
 - Посты о беге (мотивация, тренировки, экипировка)
@@ -64,17 +61,12 @@ SYSTEM_PROMPT_CONTENT = """
 - «3 ошибки в выборе беговых кроссовок»
 - «Как автоматизировать генерацию 10 идей постов за 2 минуты»
 
-Пиши живо, с примерами, без воды.
-"""
+Пиши живо, с примерами, без воды."""
 
-SYSTEM_PROMPT_AI_BOT = """
-Ты помощник по AI-ботам и автоматизации контента.
+SYSTEM_PROMPT_AI_BOT = """Ты помощник по AI-ботам и автоматизации контента.
 Помогай с интеграцией OpenAI, Claude, создавать промпты.
 Объясняй архитектуру, best practices, отладку.
-Отвечай с примерами кода и конкретными решениями.
-"""
+Отвечай с примерами кода и конкретными решениями."""
 
-# Max message history
-
-MAX_HISTORY_LENGTH = 10
+# Message history limits
 MAX_HISTORY_LENGTH = 10  # Keep last 10 messages per user
