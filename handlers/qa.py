@@ -1,4 +1,5 @@
 from aiogram import Router, types
+from aiogram.filters import Command
 from services.knowledge import knowledge_texts
 from services.openai_client import call_openai
 
@@ -18,7 +19,7 @@ def build_context(question: str) -> str:
     return "\n\n---\n\n".join(p for p in parts if p)
 
 
-@router.message(commands={"ask"})
+@router.message(Command("ask"))
 async def ask(message: types.Message):
     question = message.get_args()
     if not question:
