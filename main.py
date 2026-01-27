@@ -8,7 +8,7 @@ from aiogram.client.session.aiohttp import AiohttpSession
 from config import TELEGRAM_BOT_TOKEN
 from handlers.commands import router as command_router
 from handlers.messages import router as message_router
-from handlers import posts, qa
+from handlers import commands, messages, posts, qa
 
 
 logging.basicConfig(level=logging.INFO)
