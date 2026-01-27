@@ -8,6 +8,8 @@ from aiogram.client.session.aiohttp import AiohttpSession
 from config import TELEGRAM_BOT_TOKEN
 from handlers.commands import router as command_router
 from handlers.messages import router as message_router
+from handlers import posts, qa
+
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -18,8 +20,11 @@ bot = Bot(token=TELEGRAM_BOT_TOKEN, session=session)
 dp = Dispatcher()
 
 # Register routers
-dp.include_router(command_router)
-dp.include_router(message_router)
+dp.include_router(commands_router)
+dp.include_router(messages_router)
+dp.include_router(posts.router)
+dp.include_router(qa.router)
+
 
 # FastAPI app
 app = FastAPI()
