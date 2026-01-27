@@ -1,5 +1,5 @@
 from aiogram import Router, types
-from aiogram.filters import Command
+from aiogram.filters import Command, CommandObject
 from services.knowledge import knowledge_texts
 from services.openai_client import call_openai
 
@@ -13,37 +13,37 @@ def build_context(question: str) -> str:
     if any(w in q for w in ["план", "стратег", "развити", "бренд", "канал"]):
         parts.append(knowledge_texts.get("brand_strategy", ""))
         parts.append(knowledge_texts.get("content_plan", ""))
-        
+    
     # Советы и питание
     if any(w in q for w in ["совет", "питан", "еда", "экипиров", "кроссовк", "техник"]):
         parts.append(knowledge_texts.get("running_tips", ""))
-        
+    
     # Новички
     if any(w in q for w in ["начать", "нович", "перв", "страшно"]):
         parts.append(knowledge_texts.get("beginner_support", ""))
         parts.append(knowledge_texts.get("easy_running_philosophy", ""))
-        
+    
     # Сообщество
     if any(w in q for w in ["сообществ", "группа", "совместн", "пробежк", "клуб"]):
         parts.append(knowledge_texts.get("community_and_runs", ""))
-        
+    
     return "\n\n---\n\n".join(p for p in parts if p)
 
 @router.message(Command("ask"))
-async def ask(message: types.Message):
-    question = message.get_args()
+async def ask(message: types.Message, command: CommandObject):
+    question = command.args
     if not question:
         await message.answer(
             "Напиши вопрос после команды, например:\n\n"
             "/ask С чего начать бег после 30?"
         )
         return
-        
+    
     context = build_context(question)
     system_prompt = (
         "Ты — Андрей Потапов, автор канала про спокойный бег и сообщество.\n"
         "Отвечай коротко, по делу, без планов тренировок и без медицинских советов.\n"
-        "Опирайся на базу знаний ниже, не противоречь ей.\n"
+        "Опирайся на базу знаний ниже, не противоречь им.\n"
         "Если вопрос медицинский или про детальный план, мягко посоветуй обратиться к врачу или тренеру.\n"
         "База знаний:\n" + context
     )
