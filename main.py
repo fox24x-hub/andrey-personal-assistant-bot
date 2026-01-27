@@ -5,10 +5,13 @@ from fastapi import FastAPI, Request
 from aiogram import Bot, Dispatcher
 from aiogram.types import Update
 from aiogram.client.session.aiohttp import AiohttpSession
-from config import TELEGRAM_BOT_TOKEN, WEBHOOK_HOST
+from config import TELEGRAM_BOT_TOKEN, WEBHOOK_HOST, WEBHOOK_PORT  # ← добавлен PORT
+
 from handlers.commands import router as commands_router
 from handlers.messages import router as messages_router
-from handlers import posts, qa
+# TODO: создать handlers/posts.py и handlers/qa.py
+# from handlers.posts import router as posts_router
+# from handlers.qa import router as qa_router
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -18,16 +21,16 @@ session = AiohttpSession()
 bot = Bot(token=TELEGRAM_BOT_TOKEN, session=session)
 dp = Dispatcher()
 
-# Include routers in correct order
+# Include routers (commands first!)
 dp.include_router(commands_router)
-dp.include_router(posts.router)
-dp.include_router(qa.router)
 dp.include_router(messages_router)
+# dp.include_router(posts_router)
+# dp.include_router(qa_router)
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     # Set webhook on startup
-    webhook_url = f"{WEBHOOK_HOST}/webhook"
+    webhook_url = f"{WEBHOOK_HOST}:{WEBHOOK_PORT}/webhook"  # ← добавил порт!
     if not webhook_url.startswith('http'):
         webhook_url = f"https://{webhook_url}"
     
@@ -35,7 +38,7 @@ async def lifespan(app: FastAPI):
     await bot.set_webhook(url=webhook_url, drop_pending_updates=True)
     yield
     # Cleanup on shutdown
-    await session.close()
+    await bot.session.close()  # ← bot.session вместо session
 
 app = FastAPI(lifespan=lifespan)
 
@@ -56,5 +59,5 @@ async def health():
 
 if __name__ == "__main__":
     import uvicorn
-    port = int(os.getenv("PORT", 8000))
+    port = int(os.getenv("PORT", WEBHOOK_PORT))  # ← используем config
     uvicorn.run(app, host="0.0.0.0", port=port)
