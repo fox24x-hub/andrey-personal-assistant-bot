@@ -27,11 +27,11 @@ dp.include_router(messages_router)
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     # Set webhook on startup
-    webhook_url = f\"{WEBHOOK_HOST}/webhook\"
+    webhook_url = f"{WEBHOOK_HOST}/webhook"
     if not webhook_url.startswith('http'):
-        webhook_url = f\"https://{webhook_url}\"
+        webhook_url = f"https://{webhook_url}"
     
-    logger.info(f\"Setting webhook to {webhook_url}\")
+    logger.info(f"Setting webhook to {webhook_url}")
     await bot.set_webhook(url=webhook_url, drop_pending_updates=True)
     yield
     # Cleanup on shutdown
@@ -39,22 +39,22 @@ async def lifespan(app: FastAPI):
 
 app = FastAPI(lifespan=lifespan)
 
-@app.post(\"/webhook\")
+@app.post("/webhook")
 async def telegram_webhook(request: Request):
     try:
         data = await request.json()
         update = Update.model_validate(data)
         await dp.feed_update(bot, update)
-        return {\"ok\": True}
+        return {"ok": True}
     except Exception:
-        logger.exception(\"Webhook error\")
-        return {\"ok\": False}
+        logger.exception("Webhook error")
+        return {"ok": False}
 
-@app.get(\"/health\")
+@app.get("/health")
 async def health():
-    return {\"status\": \"ok\"}
+    return {"status": "ok"}
 
-if __name__ == \"__main__\":
+if __name__ == "__main__":
     import uvicorn
-    port = int(os.getenv(\"PORT\", 8000))
-    uvicorn.run(app, host=\"0.0.0.0\", port=port)
+    port = int(os.getenv("PORT", 8000))
+    uvicorn.run(app, host="0.0.0.0", port=port)
