@@ -1,14 +1,14 @@
 from aiogram import Router, types
-from aiogram.filters import Command
+from aiogram.filters import Command, CommandObject
 from services.openai_client import call_openai
 from services.knowledge import knowledge_texts
 
 router = Router()
 
 @router.message(Command("post_easy"))
-async def post_easy(message: types.Message):
+async def post_easy(message: types.Message, command: CommandObject):
     kb = knowledge_texts.get("easy_running_philosophy", "")
-    user_hint = message.get_args()
+    user_hint = command.args
     system_prompt = (
         "Ты — Андрей Потапов. Пишешь пост для личного ТГ-канала про спокойный бег.\n"
         "Опирайся на знания ниже, не противоречь им.\n"
@@ -24,9 +24,9 @@ async def post_easy(message: types.Message):
     await message.answer(answer, parse_mode="Markdown")
 
 @router.message(Command("post_beginner"))
-async def post_beginner(message: types.Message):
+async def post_beginner(message: types.Message, command: CommandObject):
     kb = knowledge_texts.get("beginner_support", "")
-    user_hint = message.get_args()
+    user_hint = command.args
     system_prompt = (
         "Ты — Андрей Потапов. Пишешь пост для личного ТГ-канала про поддержку новичков.\n"
         "Опирайся на знания ниже, не противоречь им.\n"
@@ -42,9 +42,9 @@ async def post_beginner(message: types.Message):
     await message.answer(answer, parse_mode="Markdown")
 
 @router.message(Command("post_community"))
-async def post_community(message: types.Message):
+async def post_community(message: types.Message, command: CommandObject):
     kb = knowledge_texts.get("community_and_runs", "")
-    user_hint = message.get_args()
+    user_hint = command.args
     system_prompt = (
         "Ты — Андрей Потапов. Пишешь пост про сообщество и совместные пробежки.\n"
         "Опирайся на знания ниже, не противоречь им.\n"
@@ -60,9 +60,9 @@ async def post_community(message: types.Message):
     await message.answer(answer, parse_mode="Markdown")
 
 @router.message(Command("post_about"))
-async def post_about(message: types.Message):
+async def post_about(message: types.Message, command: CommandObject):
     kb = knowledge_texts.get("about_andrey", "")
-    user_hint = message.get_args()
+    user_hint = command.args
     system_prompt = (
         "Ты — Андрей Потапов. Пишешь пост-знакомство для личного канала.\n"
         "Опирайся на знания ниже, не противоречь им.\n"
@@ -78,9 +78,9 @@ async def post_about(message: types.Message):
     await message.answer(answer, parse_mode="Markdown")
 
 @router.message(Command("post_tips"))
-async def post_tips(message: types.Message):
+async def post_tips(message: types.Message, command: CommandObject):
     kb = knowledge_texts.get("running_tips", "")
-    user_hint = message.get_args()
+    user_hint = command.args
     system_prompt = (
         "Ты — Андрей Потапов. Пишешь пост с практическими советами для бегунов 30+.\n"
         "Опирайся на знания ниже (питание, экипировка, техника).\n"
@@ -96,10 +96,10 @@ async def post_tips(message: types.Message):
     await message.answer(answer, parse_mode="Markdown")
 
 @router.message(Command("post_strategy"))
-async def post_strategy(message: types.Message):
+async def post_strategy(message: types.Message, command: CommandObject):
     kb_strat = knowledge_texts.get("brand_strategy", "")
     kb_plan = knowledge_texts.get("content_plan", "")
-    user_hint = message.get_args()
+    user_hint = command.args
     system_prompt = (
         "Ты — Андрей Потапов. Пишешь пост, опираясь на свою стратегию развития и контент-план.\n"
         "Твоя миссия: бег для жизни, а не жизнь для бега.\n"
