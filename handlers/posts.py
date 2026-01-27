@@ -1,0 +1,93 @@
+from aiogram import Router, types
+from services.openai_client import call_openai
+from services.knowledge import knowledge_texts
+
+router = Router()
+
+
+@router.message(commands={"post_easy"})
+async def post_easy(message: types.Message):
+    kb = knowledge_texts.get("easy_running_philosophy", "")
+    user_hint = message.get_args()  # /post_easy страх новичка
+
+    system_prompt = (
+        "Ты — Андрей Потапов. Пишешь пост для личного ТГ-канала про спокойный бег.\n"
+        "Опирайся на знания ниже, не противоречь им.\n"
+        "Стиль: простой, человеческий, без тренерства, без планов тренировок.\n"
+        "Текст из базы знаний:\n" + kb
+    )
+
+    user_prompt = (
+        "Сгенерируй один связный пост для канала.\n"
+        f"Фокус: {user_hint or 'объяснить, что такое спокойный бег для взрослых новичков.'}\n"
+        "Без эмодзи, 1–2 подзаголовка максимум."
+    )
+
+    answer = await call_openai(system_prompt, user_prompt)
+    await message.answer(answer, parse_mode="Markdown")
+
+
+@router.message(commands={"post_beginner"})
+async def post_beginner(message: types.Message):
+    kb = knowledge_texts.get("beginner_support", "")
+    user_hint = message.get_args()
+
+    system_prompt = (
+        "Ты — Андрей Потапов. Пишешь пост для личного ТГ-канала про поддержку новичков.\n"
+        "Опирайся на знания ниже, не противоречь им.\n"
+        "Стиль: простой, поддерживающий, без медицины и без планов тренировок.\n"
+        "Текст из базы знаний:\n" + kb
+    )
+
+    user_prompt = (
+        "Сгенерируй один связный пост для канала.\n"
+        f"Фокус: {user_hint or 'поддержка новичка, которому страшно начинать бег.'}\n"
+        "Без эмодзи, 1–2 подзаголовка максимум."
+    )
+
+    answer = await call_openai(system_prompt, user_prompt)
+    await message.answer(answer, parse_mode="Markdown")
+
+
+@router.message(commands={"post_community"})
+async def post_community(message: types.Message):
+    kb = knowledge_texts.get("community_and_runs", "")
+    user_hint = message.get_args()
+
+    system_prompt = (
+        "Ты — Андрей Потапов. Пишешь пост про сообщество и совместные пробежки.\n"
+        "Опирайся на знания ниже, не противоречь им.\n"
+        "Стиль: простой, дружелюбный, без тренерства.\n"
+        "Текст из базы знаний:\n" + kb
+    )
+
+    user_prompt = (
+        "Сгенерируй один связный пост для канала.\n"
+        f"Фокус: {user_hint or 'зачем вообще беговое сообщество взрослым людям.'}\n"
+        "Без эмодзи, 1–2 подзаголовка максимум."
+    )
+
+    answer = await call_openai(system_prompt, user_prompt)
+    await message.answer(answer, parse_mode="Markdown")
+
+
+@router.message(commands={"post_about"})
+async def post_about(message: types.Message):
+    kb = knowledge_texts.get("about_andrey", "")
+    user_hint = message.get_args()
+
+    system_prompt = (
+        "Ты — Андрей Потапов. Пишешь пост-знакомство для личного канала.\n"
+        "Опирайся на знания ниже, не противоречь им.\n"
+        "Стиль: простой, честный, без пафоса.\n"
+        "Текст из базы знаний:\n" + kb
+    )
+
+    user_prompt = (
+        "Сгенерируй один связный пост-знакомство для канала.\n"
+        f"Фокус: {user_hint or 'кто ты, чем занимаешься и почему тебе важен спокойный бег.'}\n"
+        "Без эмодзи, 1–2 подзаголовка максимум."
+    )
+
+    answer = await call_openai(system_prompt, user_prompt)
+    await message.answer(answer, parse_mode="Markdown")
