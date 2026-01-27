@@ -1,7 +1,9 @@
 from aiogram import Router, types
 from aiogram.filters import Command
+
 from services.knowledge import knowledge_texts
 from services.openai_client import call_openai
+
 
 router = Router()
 
@@ -39,8 +41,10 @@ async def ask(message: types.Message):
         "База знаний:\n" + context
     )
 
-    user_prompt = f"Вопрос пользователя: {question}\nДай один связный ответ для Telegram."
+    user_prompt = (
+        f"Вопрос пользователя: {question}\n"
+        "Дай один связный ответ для Telegram."
+    )
 
     answer = await call_openai(system_prompt, user_prompt)
     await message.answer(answer, parse_mode="Markdown")
-м
