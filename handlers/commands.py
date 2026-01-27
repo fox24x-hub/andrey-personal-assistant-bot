@@ -11,19 +11,9 @@ async def cmd_start(message: Message):
     await message.answer(
         "Привет, это личный ассистент Андрея Потапова!\n"
         "Выбери режим:\n"
-        "/plan - помощь с планом тренировок\n"
         "/content - идеи контента\n"
         "/ai_bot_help - помощь с AI-ботами\n"
         "Или просто пиши вопрос!"
-    )
-
-
-@router.message(Command("plan"))
-async def cmd_plan(message: Message):
-    """Handle /plan command."""
-    await message.answer(
-        "Режим помощника по планированию.\n"
-        "Расскажи мне о своих тренировочных целях!"
     )
 
 
@@ -51,7 +41,6 @@ async def cmd_help(message: Message):
     await message.answer(
         "Доступные команды:\n"
         "/start - начать\n"
-        "/plan - тренировки\n"
         "/content - контент\n"
         "/ai_bot_help - AI-ботов\n"
         "/help - эта справка"
