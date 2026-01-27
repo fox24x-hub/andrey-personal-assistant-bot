@@ -5,13 +5,10 @@ from fastapi import FastAPI, Request
 from aiogram import Bot, Dispatcher
 from aiogram.types import Update
 from aiogram.client.session.aiohttp import AiohttpSession
-from config import TELEGRAM_BOT_TOKEN, WEBHOOK_HOST, WEBHOOK_PORT  # ← добавлен PORT
+from config import TELEGRAM_BOT_TOKEN, WEBHOOK_HOST, WEBHOOK_PORT
 
 from handlers.commands import router as commands_router
 from handlers.messages import router as messages_router
-# TODO: создать handlers/posts.py и handlers/qa.py
-# from handlers.posts import router as posts_router
-# from handlers.qa import router as qa_router
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -21,24 +18,30 @@ session = AiohttpSession()
 bot = Bot(token=TELEGRAM_BOT_TOKEN, session=session)
 dp = Dispatcher()
 
-# Include routers (commands first!)
+# Include routers
 dp.include_router(commands_router)
 dp.include_router(messages_router)
-# dp.include_router(posts_router)
-# dp.include_router(qa_router)
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    # Set webhook on startup
-    webhook_url = f"{WEBHOOK_HOST}:{WEBHOOK_PORT}/webhook"  # ← добавил порт!
-    if not webhook_url.startswith('http'):
-        webhook_url = f"https://{webhook_url}"
+    try:
+        # Railway публичный URL (NGINX проксирует на твой PORT)
+        webhook_url = f"https://{WEBHOOK_HOST}/webhook"  # Без порта!
+        
+        logger.info(f"Setting webhook to {webhook_url}")
+        await bot.set_webhook(url=webhook_url, drop_pending_updates=True)
+        logger.info("✅ Webhook set successfully!")
+    except Exception as e:
+        logger.error(f"❌ Failed to set webhook: {e}")
+        # Продолжаем без webhook (polling fallback)
     
-    logger.info(f"Setting webhook to {webhook_url}")
-    await bot.set_webhook(url=webhook_url, drop_pending_updates=True)
     yield
-    # Cleanup on shutdown
-    await bot.session.close()  # ← bot.session вместо session
+    
+    # Cleanup
+    try:
+        await bot.session.close()
+    except:
+        pass
 
 app = FastAPI(lifespan=lifespan)
 
@@ -55,9 +58,9 @@ async def telegram_webhook(request: Request):
 
 @app.get("/health")
 async def health():
-    return {"status": "ok"}
+    return {"status": "ok", "webhook_host": WEBHOOK_HOST}
 
 if __name__ == "__main__":
     import uvicorn
-    port = int(os.getenv("PORT", WEBHOOK_PORT))  # ← используем config
+    port = int(os.getenv("PORT", WEBHOOK_PORT))
     uvicorn.run(app, host="0.0.0.0", port=port)
