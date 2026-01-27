@@ -17,8 +17,8 @@ class MemoryService:
         })
 
         # Keep only last max_history messages
-        if len(self.user_history[user_id]) > self.max_history * 2:
-            self.user_history[user_id] = self.user_history[user_id][-self.max_history * 2:]
+        if len(self.user_history[user_id]) > self.max_history 
+            self.user_history[user_id] = self.user_history[user_id][-self.max_history :]
 
     def get_history(self, user_id: int) -> list:
         """Get user's conversation history."""
