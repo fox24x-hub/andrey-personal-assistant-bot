@@ -25,23 +25,22 @@ dp.include_router(messages_router)
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     try:
-        # Railway публичный URL (NGINX проксирует на твой PORT)
-        webhook_url = f"https://andrey-personal-assistant-bot-production.up.railway.app//webhook"  # Без порта!
+        # Убираем двойной слеш
+        webhook_url = f"https://{WEBHOOK_HOST.lstrip('/')}/webhook".rstrip('/')
         
         logger.info(f"Setting webhook to {webhook_url}")
         await bot.set_webhook(url=webhook_url, drop_pending_updates=True)
         logger.info("✅ Webhook set successfully!")
     except Exception as e:
         logger.error(f"❌ Failed to set webhook: {e}")
-        # Продолжаем без webhook (polling fallback)
     
     yield
     
-    # Cleanup
     try:
         await bot.session.close()
     except:
         pass
+
 
 app = FastAPI(lifespan=lifespan)
 
