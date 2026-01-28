@@ -7,9 +7,11 @@ load_dotenv()
 TELEGRAM_BOT_TOKEN = os.getenv("TELEGRAM_BOT_TOKEN")
 if not TELEGRAM_BOT_TOKEN:
     raise ValueError("TELEGRAM_BOT_TOKEN environment variable not set")
-WEBHOOK_HOST = os.getenv("WEBHOOK_HOST")  # Railway домен БЕЗ https://
-if not WEBHOOK_HOST:andrey-personal-assistant-bot-production.up.railway.app/
-    raise ValueError("WEBHOOK_HOST not set")
+
+WEBHOOK_HOST = os.getenv("WEBHOOK_HOST")
+if not WEBHOOK_HOST:
+    raise ValueError("WEBHOOK_HOST environment variable not set")
+
 WEBHOOK_PORT = int(os.getenv("WEBHOOK_PORT", "8000"))
 
 # OpenAI
