@@ -1,76 +1,74 @@
 import os
 from dotenv import load_dotenv
 
-load_dotenv()
+# Загружаем .env только если он есть (чтобы не мешать продакшену)
+if os.path.exists(".env"):
+    load_dotenv()
+
+def get_env(name: str, default: str | None = None, required: bool = False) -> str:
+    value = os.getenv(name, default)
+    if required and not value:
+        raise RuntimeError(f"Required environment variable {name} is not set")
+    return value
 
 # Telegram
-TELEGRAM_BOT_TOKEN = os.getenv("TELEGRAM_BOT_TOKEN")
-if not TELEGRAM_BOT_TOKEN:
-    raise ValueError("TELEGRAM_BOT_TOKEN environment variable not set")
-
-WEBHOOK_HOST = os.getenv("WEBHOOK_HOST")
-if not WEBHOOK_HOST:
-    raise ValueError("WEBHOOK_HOST environment variable not set")
-
-WEBHOOK_PORT = int(os.getenv("WEBHOOK_PORT", "8000"))
+TELEGRAM_BOT_TOKEN = get_env("TELEGRAM_BOT_TOKEN", required=True)
+WEBHOOK_HOST = get_env("WEBHOOK_HOST")  # можно оставить пустым, если используешь polling
+WEBHOOK_PORT = int(get_env("WEBHOOK_PORT", "8000"))
 
 # OpenAI
-OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
-if not OPENAI_API_KEY:
-    raise ValueError("OPENAI_API_KEY environment variable not set")
-OPENAI_MODEL = os.getenv("OPENAI_MODEL", "gpt-4o-mini")
+OPENAI_API_KEY = get_env("OPENAI_API_KEY", required=True)
+OPENAI_MODEL = get_env("OPENAI_MODEL", "gpt-4o-mini")
 
 # System prompts
-SYSTEM_PROMPT_DEFAULT = """Ты личный ассистент Андрея Потапова.
-
+SYSTEM_PROMPT_DEFAULT = """
+Ты личный ассистент Андрея Потапова.
 ## Контекст о пользователе:
 - Бегун-ультрамарафонец (опыт 75 км, марафоны, трейлранинг)
 - Разрабатывает AI-ботов для контента
 - Живёт в Екатеринбурге, бегает в парках Урала
 - Интересуется: лыжи, триатлон, crossfit, минимализм в тренировках
-
 ## Твоя роль:
 - Отвечай кратко, по делу
 - Используй примеры из бега (темп, VO2max, интервалы)
 - Помогай с Python, aiogram, OpenAI
 - Структурируй ответы списками или пунктами
-
 ## Стиль:
 - Без воды и общих фраз
 - Практичные советы с конкретикой
-- Если нужен пример кода — давай рабочий код"""
+- Если нужен пример кода — давай рабочий код
+"""
 
-SYSTEM_PROMPT_CONTENT = """Ты помощник по созданию контента для бренда «Андрей Потапов Run AI».
-
+SYSTEM_PROMPT_CONTENT = """
+Ты помощник по созданию контента для бренда «Андрей Потапов Run AI».
 ## Специализация:
 - Посты о беге (мотивация, тренировки, экипировка)
 - Обзоры экипировки (кроссовки, одежда, гаджеты)
 - AI-боты and автоматизация контента
 - Трейлранинг, бег в городе, бег по горам, силовые тренировки (crossfit), триатлон, минимализм в тренировках
-
 ## Целевая аудитория:
 - Бегуны-любители 30-50 лет
 - Марафонцы и ультрамарафонцы, начинающие бегуны
 - Кто хочет начать бегать
 - Те, кто хочет совмещать бег и технологии
-
 ## Формат постов:
 1. Цепляющий заголовок
 2. Личная история / пример из опыта
 3. Практический совет
 4. Призыв к действию (вопрос к читателям)
-
 ## Примеры тем:
 - «Почему я бросил бегать по пульсу и перешёл на темп»
 - «3 ошибки в выборе беговых кроссовок»
 - «Как автоматизировать генерацию 10 идей постов за 2 минуты»
+Пиши живо, с примерами, без воды.
+"""
 
-Пиши живо, с примерами, без воды."""
-
-SYSTEM_PROMPT_AI_BOT = """Ты помощник по AI-ботам и автоматизации контента.
+SYSTEM_PROMPT_AI_BOT = """
+Ты помощник по AI-ботам и автоматизации контента.
 Помогай с интеграцией OpenAI, Claude, создавать промпты.
 Объясняй архитектуру, best practices, отладку.
-Отвечай с примерами кода и конкретными решениями."""
+Отвечай с примерами кода и конкретными решениями.
+"""
 
 # Message history limits
 MAX_HISTORY_LENGTH = 10  # Keep last 10 messages per user
